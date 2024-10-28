@@ -1,8 +1,10 @@
+from sqlalchemy.orm import Session
+
 from .base import CRUD
-from models.user import User
+from nutrition_logger.models import User
 
-# implement logic for getting user by email
+class UserCRUD(CRUD):    
+    def get_by_email(self, db: Session, email: str):
+        return db.query(self._model).filter(self._model.email == email).first()
 
-# implement Logic for getting user by log
-
-user_crud = CRUD(model=User)
+user_crud = UserCRUD(model=User)

@@ -1,23 +1,22 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 class CRUD:
     def __init__(self, model):
         self._model = model
+        self._name = model.__class__.__name__
     
     def create(self, db: Session, schema):
         obj_data = schema.model_dump(exclude_none=True, exclude_unset=True)
         db_obj = self._model(**obj_data)
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
 
-    def create_with_user(self, db: Session, schema, id):
-        obj_data = schema.model_dump(exclude_none=True, exclude_unset=True, exclude_defaults=True)
-        db_obj = self._model(**obj_data, user_id=id)
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        try:
+            db.commit()
+            db.refresh(db_obj)
+        except IntegrityError as e:
+            db.rollback()
+            raise ValueError(f"Couldn't add {self._model.__name__}: {str(e)}")
         return db_obj
 
     def update(self, db: Session, db_obj, schema):
@@ -25,8 +24,13 @@ class CRUD:
         for field, value in obj_data.items():
             setattr(db_obj, field, value)
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+
+        try:
+            db.commit()
+            db.refresh(db_obj)
+        except IntegrityError as e:
+            db.rollback()
+            raise ValueError(f"Couldn't update {self._model.__name__}: {str(e)}")
         return db_obj
 
     def delete(self, db: Session, db_obj):

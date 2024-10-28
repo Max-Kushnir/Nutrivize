@@ -1,6 +1,4 @@
 from .base import CRUD
-from models.food import Food
-
-# implement logic for adding food to food entry
+from nutrition_logger.models.food import Food
 
 food_crud = CRUD(model=Food)
