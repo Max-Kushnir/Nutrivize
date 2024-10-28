@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, Session
 
-from nutrition_logger.models import Base, User, Food, DailyLog, FoodEntry
+from nutrition_logger.models import User, Food, DailyLog, FoodEntry
+from nutrition_logger.database.db import Base
 
 # Load environment variables
 load_dotenv()
@@ -43,7 +44,7 @@ def db_session(engine, tables):
     transaction.rollback()
     connection.close()
 
-# smoke tests to assert that sqlalchemy and database is properly set up
+# smoke tests to check that sqlalchemy and database are properly set up
 def test_database_connection(engine):
     with engine.connect() as conn:
         assert conn is not None
@@ -59,7 +60,7 @@ def test_session_exists(db_session):
     assert isinstance(db_session, Session)
     assert db_session.bind is not None
 
-# integration tests with database
+# testing sqlalchemy class functionality with postgres database
 def test_add_user(db_session):
     user = User(username="testuser", email="testuser@example.com")
     db_session.add(user)
