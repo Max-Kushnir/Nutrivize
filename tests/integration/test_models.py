@@ -1,23 +1,20 @@
 import pytest, os, datetime
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, Session
 
 from api.models import User, Food, DailyLog, FoodEntry
 from api.database.db import Base
-
-# Load environment variables
-load_dotenv()
+from api.config import settings
 
 # Database configuration
-user = os.environ.get("POSTGRES_USER")
-password = os.environ.get("POSTGRES_PW")
-db = os.environ.get("POSTGRES_TEST_DB")
-host = os.environ.get("POSTGRES_HOST", "localhost")
-port = os.environ.get("POSTGRES_PORT", 5432)
+TEST_DB_URL = (
+    f"postgresql://{settings.POSTGRES_USER}:"
+    f"{settings.POSTGRES_PASSWORD}@"
+    f"{settings.POSTGRES_HOST}:"
+    f"{settings.POSTGRES_PORT}/"
+    f"{settings.POSTGRES_DB}"
+)
 
-# Construct database URL
-TEST_DB_URL = f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
 # connect to database
 @pytest.fixture(scope="session")
@@ -62,7 +59,7 @@ def test_session_exists(db_session):
 
 # testing sqlalchemy class functionality with postgres database
 def test_add_user(db_session):
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -102,7 +99,7 @@ def test_add_food(db_session):
     assert added_food.fat == 0.3
 
 def test_add_log(db_session):
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -117,7 +114,7 @@ def test_add_log(db_session):
     assert added_log.user_id == 1
 
 def test_add_food_entry(db_session):
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -154,7 +151,7 @@ def test_add_food_entry(db_session):
     assert added_food_entry.daily_log.user.username == "testuser"
 
 def test_update_user(db_session):
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -201,7 +198,7 @@ def test_update_food(db_session):
     assert updated_food.calories == 110
 
 def test_update_daily_log(db_session):
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -229,7 +226,7 @@ def test_update_daily_log(db_session):
     assert updated_log.date == new_date
 
 def test_update_food_entry(db_session):
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -282,7 +279,7 @@ def test_update_food_entry(db_session):
 
 # children of user and list should be deleted if their parent is removed from database
 def test_cascade_delete(db_session): 
-    user = User(username="testuser", email="testuser@example.com")
+    user = User(username="testuser", email="testuser@example.com", hashed_password="hashed_password_placeholder")
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)

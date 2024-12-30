@@ -1,21 +1,19 @@
 from typing import Generator
-import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
+from api.config import settings
 
 class Base(DeclarativeBase):
     pass
 
-load_dotenv()
-
-user_name = os.environ.get("POSTGRES_USER")
-password = os.environ.get("POSTGRES_PW")
-db = os.environ.get("POSTGRES_DB")
-host = os.environ.get("POSTGRES_HOST", "localhost")
-port = os.environ.get("POSTGRES_PORT", 5432)
-url = f"postgresql://{user_name}:{password}@{host}:{port}/{db}"
+url = (
+    f"postgresql://{settings.POSTGRES_USER}:"
+    f"{settings.POSTGRES_PASSWORD}@"
+    f"{settings.POSTGRES_HOST}:"
+    f"{settings.POSTGRES_PORT}/"
+    f"{settings.POSTGRES_DB}"
+)
 
 engine = create_engine(url)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
