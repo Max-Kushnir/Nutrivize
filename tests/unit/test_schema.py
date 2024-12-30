@@ -1,10 +1,10 @@
 import pytest
 from pydantic import ValidationError
 
-from nutrition_logger.schema.daily_log import DailyLogCreate, DailyLogResponse
-from nutrition_logger.schema.user import UserCreate, UserResponse
-from nutrition_logger.schema.food import FoodCreate, FoodResponse
-from nutrition_logger.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from api.schema.daily_log import DailyLogCreate, DailyLogResponse
+from api.schema.user import UserCreate, UserResponse
+from api.schema.food import FoodCreate, FoodResponse
+from api.schema.food_entry import FoodEntryCreate, FoodEntryResponse
 
 UserResponse.model_rebuild()
 

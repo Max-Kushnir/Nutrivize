@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, Session
 
-from nutrition_logger.models import User, Food, DailyLog, FoodEntry
-from nutrition_logger.database.db import Base
+from api.models import User, Food, DailyLog, FoodEntry
+from api.database.db import Base
 
 # Load environment variables
 load_dotenv()

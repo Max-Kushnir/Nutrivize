@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "nutrition_logger"
+name = "api"
 version = "0.1.0"
 description = ""
 authors = ["MaxKushSolo <maxekushnir@gmail.com>"]

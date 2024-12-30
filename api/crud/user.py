@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from .base import CRUD
-from nutrition_logger.models import User
+from api.models import User
 
 class UserCRUD(CRUD):    
     def get_by_email(self, db: Session, email: str):

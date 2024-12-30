@@ -3,12 +3,12 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from nutrition_logger.models import User, Food, DailyLog, FoodEntry
-from nutrition_logger.database.db import Base
-from nutrition_logger.schema.daily_log import DailyLogCreate, DailyLogResponse
-from nutrition_logger.schema.user import UserCreate, UserResponse
-from nutrition_logger.schema.food import FoodCreate, FoodResponse
-from nutrition_logger.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from api.models import User, Food, DailyLog, FoodEntry
+from api.database.db import Base
+from api.schema.daily_log import DailyLogCreate, DailyLogResponse
+from api.schema.user import UserCreate, UserResponse
+from api.schema.food import FoodCreate, FoodResponse
+from api.schema.food_entry import FoodEntryCreate, FoodEntryResponse
 UserResponse.model_rebuild()
 
 # Load environment variables
