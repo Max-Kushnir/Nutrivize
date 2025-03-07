@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import UniqueConstraint
 
-from nutrition_logger.database.db import Base
+from backend.database.db import Base
 
 class Food(Base):
     __tablename__ = 'foods'

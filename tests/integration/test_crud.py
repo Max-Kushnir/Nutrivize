@@ -1,29 +1,23 @@
-import pytest, os
-import datetime
-from dotenv import load_dotenv
+import pytest
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, Session
 
-from nutrition_logger.models import User, Food
-from nutrition_logger.database.db import Base
-from nutrition_logger.crud import user_crud, food_crud, daily_log_crud, food_entry_crud
-from nutrition_logger.schema.user import UserCreate
-from nutrition_logger.schema.food import FoodCreate
-from nutrition_logger.schema.daily_log import DailyLogCreate
-from nutrition_logger.schema.food_entry import FoodEntryCreate
-
-# Load environment variables
-load_dotenv()
+from backend.database.db import Base
+from backend.crud import user_crud, food_crud, daily_log_crud, food_entry_crud
+from backend.schema.user import UserCreate
+from backend.schema.food import FoodCreate
+from backend.schema.daily_log import DailyLogCreate
+from backend.schema.food_entry import FoodEntryCreate
+from backend.config import settings
 
 # Database configuration
-user = os.environ.get("POSTGRES_USER")
-password = os.environ.get("POSTGRES_PW")
-db = os.environ.get("POSTGRES_TEST_DB")
-host = os.environ.get("POSTGRES_HOST", "localhost")
-port = os.environ.get("POSTGRES_PORT", 5432)
-
-# Construct database URL
-TEST_DB_URL = f"postgresql://{user}:{password}@{host}:{port}/{db}"
+TEST_DB_URL = (
+    f"postgresql://{settings.POSTGRES_USER}:"
+    f"{settings.POSTGRES_PASSWORD}@"
+    f"{settings.POSTGRES_HOST}:"
+    f"{settings.POSTGRES_PORT}/"
+    f"{settings.POSTGRES_TEST_DB}"
+)
 
 # Fixtures
 @pytest.fixture(scope="session")
@@ -71,40 +65,40 @@ def test_session_exists(db_session):
 
 # User CRUD Tests
 def test_user_crud_create(db_session):
-    user_schema = UserCreate(username="testuser", email="test@example.com")
+    user_schema = UserCreate(username="testuser", email="test@example.com", hashed_password="hashed_password_placeholder")
     user = user_crud.create(db_session, user_schema)
     assert user.username == "testuser"
     assert user.email == "test@example.com"
 
 def test_user_crud_create_duplicate_username(db_session):
     # Create first user
-    user_schema = UserCreate(username="testuser", email="test1@example.com")
+    user_schema = UserCreate(username="testuser", email="test1@example.com", hashed_password="hashed_password_placeholder")
     user_crud.create(db_session, user_schema)
     
     # Attempt to create user with same username
-    duplicate_schema = UserCreate(username="testuser", email="test2@example.com")
+    duplicate_schema = UserCreate(username="testuser", email="test2@example.com", hashed_password="hashed_password_placeholder")
     with pytest.raises(ValueError) as exc:
         user_crud.create(db_session, duplicate_schema)
     assert "username" in str(exc.value).lower()
 
 def test_user_crud_create_duplicate_email(db_session):
     # Create first user
-    user_schema = UserCreate(username="testuser1", email="test@example.com")
+    user_schema = UserCreate(username="testuser1", email="test@example.com", hashed_password="hashed_password_placeholder")
     user_crud.create(db_session, user_schema)
     
     # Attempt to create user with same email
-    duplicate_schema = UserCreate(username="testuser2", email="test@example.com")
+    duplicate_schema = UserCreate(username="testuser2", email="test@example.com", hashed_password="hashed_password_placeholder")
     with pytest.raises(ValueError) as exc:
         user_crud.create(db_session, duplicate_schema)
     assert "email" in str(exc.value).lower()
 
 def test_user_crud_update_to_existing_username(db_session):
     # Create two users
-    user1 = user_crud.create(db_session, UserCreate(username="user1", email="user1@example.com"))
-    user_crud.create(db_session, UserCreate(username="user2", email="user2@example.com"))
+    user1 = user_crud.create(db_session, UserCreate(username="user1", email="user1@example.com", hashed_password="hashed_password_placeholder"))
+    user_crud.create(db_session, UserCreate(username="user2", email="user2@example.com", hashed_password="hashed_password_placeholder"))
     
     # Try to update first user to have second user's username
-    update_schema = UserCreate(username="user2", email="user1@example.com")
+    update_schema = UserCreate(username="user2", email="user1@example.com", hashed_password="hashed_password_placeholder")
     with pytest.raises(ValueError) as exc:
         user_crud.update(db_session, user1, update_schema)
     assert "username" in str(exc.value).lower()
@@ -205,7 +199,7 @@ def test_food_crud_create_duplicate_name_manufacturer(db_session):
 # Daily Log CRUD Tests
 def test_daily_log_crud_create(db_session):
     # Create a user first
-    user_schema = UserCreate(username="testuser", email="test@example.com")
+    user_schema = UserCreate(username="testuser", email="test@example.com", hashed_password="hashed_password_placeholder")
     user = user_crud.create(db_session, user_schema)
     
     log_schema = DailyLogCreate(user_id=user.id)
@@ -216,7 +210,7 @@ def test_daily_log_crud_create(db_session):
 
 def test_daily_log_crud_create_duplicate_date(db_session):
     # Create a user first
-    user_schema = UserCreate(username="testuser", email="test@example.com")
+    user_schema = UserCreate(username="testuser", email="test@example.com", hashed_password="hashed_password_placeholder")
     user = user_crud.create(db_session, user_schema)
     
     # Create first log
@@ -229,7 +223,7 @@ def test_daily_log_crud_create_duplicate_date(db_session):
 
 def test_daily_log_crud_get_many_from_user(db_session):
     # Create a user first
-    user_schema = UserCreate(username="testuser", email="test@example.com")
+    user_schema = UserCreate(username="testuser", email="test@example.com", hashed_password="hashed_password_placeholder")
     user = user_crud.create(db_session, user_schema)
     
     # Create a log
@@ -269,7 +263,7 @@ def test_food_entry_crud_create_invalid_log_id(db_session):
 
 def test_food_entry_crud_create_invalid_food_id(db_session):
     # Create user and log but use invalid food_id
-    user = user_crud.create(db_session, UserCreate(username="testuser", email="test@example.com"))
+    user = user_crud.create(db_session, UserCreate(username="testuser", email="test@example.com", hashed_password="hashed_password_placeholder"))
     log = daily_log_crud.create(db_session, DailyLogCreate(user_id=user.id))
     
     entry_schema = FoodEntryCreate(daily_log_id=log.id, food_id=999)

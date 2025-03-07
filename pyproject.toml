@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "nutrition_logger"
+name = "api"
 version = "0.1.0"
 description = ""
 authors = ["MaxKushSolo <maxekushnir@gmail.com>"]
@@ -14,9 +14,15 @@ python-dotenv = "^1.0.1"
 psycopg2-binary = "^2.9.9"
 uvicorn = "^0.30.6"
 sqlalchemy-utils = "^0.41.2"
+python-jose = {version = "^3.0.0", extras = ["cryptography"]}
+passlib = {version = "^1.7.4", extras = ["bcrypt"]}
+pydantic-settings = "^2.7.0"
+httpx = "^0.28.1"
+python-multipart = "^0.0.20"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
+pytest-asyncio = "^0.25.3"
 
 [build-system]
 requires = ["poetry-core"]

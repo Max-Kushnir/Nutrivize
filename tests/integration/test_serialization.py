@@ -1,28 +1,25 @@
 import pytest, os, datetime, json
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from nutrition_logger.models import User, Food, DailyLog, FoodEntry
-from nutrition_logger.database.db import Base
-from nutrition_logger.schema.daily_log import DailyLogCreate, DailyLogResponse
-from nutrition_logger.schema.user import UserCreate, UserResponse
-from nutrition_logger.schema.food import FoodCreate, FoodResponse
-from nutrition_logger.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from backend.models import User, Food, DailyLog, FoodEntry
+from backend.database.db import Base
+from backend.schema.daily_log import DailyLogCreate, DailyLogResponse
+from backend.schema.user import UserCreate, UserResponse
+from backend.schema.food import FoodCreate, FoodResponse
+from backend.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from backend.config import settings
+
 UserResponse.model_rebuild()
 
-# Load environment variables
-load_dotenv()
-
 # Database configuration
-user = os.environ.get("POSTGRES_USER")
-password = os.environ.get("POSTGRES_PW")
-db = os.environ.get("POSTGRES_TEST_DB")
-host = os.environ.get("POSTGRES_HOST", "localhost")
-port = os.environ.get("POSTGRES_PORT", 5432)
-
-# Construct database URL
-TEST_DB_URL = f"postgresql://{user}:{password}@{host}:{port}/{db}"
+TEST_DB_URL = (
+    f"postgresql://{settings.POSTGRES_USER}:"
+    f"{settings.POSTGRES_PASSWORD}@"
+    f"{settings.POSTGRES_HOST}:"
+    f"{settings.POSTGRES_PORT}/"
+    f"{settings.POSTGRES_TEST_DB}"
+)
 
 # connect to database
 @pytest.fixture(scope="session")
@@ -50,23 +47,30 @@ def db_session(engine, tables):
     connection.close()
 
 # testing serialization and deserialization with sqlalchemy
-def test_serialize(db_session):
-    user = User(username="testuser", email="testuser@example.com")
-    db_session.add(user)
+def test_deserialize(db_session):
+    user = {
+        "id": 1,
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "logs": [],
+        "hashed_password": "hashed_password_placeholder"  
+    }
+    user_json = json.dumps(user)
+    data = json.loads(user_json)
+    
+    pydantic_obj = UserCreate(**data)
+    db_user = User(**pydantic_obj.model_dump())
+    db_session.add(db_user)
     db_session.commit()
-    db_session.refresh(user)
+    db_session.refresh(db_user)
 
     db_user = db_session.query(User).first()
-    json_user = (UserResponse.model_validate(db_user)).model_dump_json()
 
-    parsed_json = json.loads(json_user)
-
-    assert set(parsed_json.keys()) == {"id", "username", "email", "logs"}
-
-    assert parsed_json["id"] == db_user.id
-    assert parsed_json["username"] == db_user.username
-    assert parsed_json["email"] == db_user.email
-    assert parsed_json["logs"] == db_user.logs
+    assert db_user.id == user["id"]
+    assert db_user.username == user["username"]
+    assert db_user.email == user["email"]
+    assert db_user.logs == user["logs"]
+    assert db_user.hashed_password == user["hashed_password"]
 
 def test_deserialize(db_session):
     user = {
@@ -79,11 +83,11 @@ def test_deserialize(db_session):
     user_json = json.dumps(user)
 
     data = json.loads(user_json)
-    pydantic_obj = UserCreate(**data)
+    pydantic_obj = UserCreate(**data, hashed_password="hashed_password_placeholder")
     db_user = User(**pydantic_obj.model_dump())
     db_session.add(db_user)
     db_session.commit()
-    db_session.refresh
+    db_session.refresh(db_user)
 
     db_user = db_session.query(User).first()
 

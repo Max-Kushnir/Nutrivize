@@ -5,7 +5,7 @@ import datetime
 from sqlalchemy import ForeignKey, UniqueConstraint, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from nutrition_logger.database.db import Base
+from backend.database.db import Base
 
 if TYPE_CHECKING:
     from .user import User
