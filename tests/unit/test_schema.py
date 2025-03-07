@@ -1,10 +1,10 @@
 import pytest
 from pydantic import ValidationError
 
-from api.schema.daily_log import DailyLogCreate, DailyLogResponse
-from api.schema.user import UserCreate, UserResponse
-from api.schema.food import FoodCreate, FoodResponse
-from api.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from backend.schema.daily_log import DailyLogCreate, DailyLogResponse
+from backend.schema.user import UserCreate, UserResponse
+from backend.schema.food import FoodCreate, FoodResponse
+from backend.schema.food_entry import FoodEntryCreate, FoodEntryResponse
 
 UserResponse.model_rebuild()
 
@@ -14,19 +14,21 @@ def test_valid_user():
     assert valid_user.model_dump() == {
         "username": "Maxime_Kushnir",
         "email": "maxekushnir@gmail.com",
-        "hashed_password": "hashed_password_placeholder"
+        "hashed_password": "hashed_password_placeholder",
+        "role": "user"
     }
 
 @pytest.mark.parametrize("field,invalid_value,error_message", [
     ("username", "", "String should have at least 1 character"),
     ("email", "Maxime_Kushnir", "value is not a valid email address"),
-    ("hashed_password", "", "String should have at least 8 character")
+    ("hashed_password", "", "String should have at least 8 characters")
 ])
 def test_invalid_user(field, invalid_value, error_message):
     valid_data = {
         "username": "Maxime_Kushnir",
         "email": "maxekushnir@gmail.com",
-        "hashed_password": "hashed_password_placeholder"
+        "hashed_password": "hashed_password_placeholder",
+        "role": "user"
     }
     invalid_data = valid_data.copy()
     invalid_data[field] = invalid_value

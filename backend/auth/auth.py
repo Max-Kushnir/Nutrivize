@@ -3,23 +3,21 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from api.database.db import get_db
-from api.crud.user import user_crud
-from api.models.user import User
-from api.config import settings
+from backend.database.db import get_db
+from backend.crud.user import user_crud
+from backend.models.user import User
+from backend.config import settings
 from .security import verify_password
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
-def authenticate_user(db: Session, username: str, password: str):
+def authenticate_user(db: Session, identifier: str, password: str):
     """
-    Verify a user's credentials using username instead of email
+    Verify a user's credentials using username or email
     """
-    user = user_crud.get_by_username(db, username)  
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
+    user = user_crud.get_by_username(db, identifier) or user_crud.get_by_email(db, identifier) 
+    if not user or not verify_password(password, user.hashed_password):
+        return None
     return user
 
 async def get_current_user(

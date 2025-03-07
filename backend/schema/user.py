@@ -11,11 +11,13 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     hashed_password: str = Field(min_length=8) 
+    role: str = "user"
 
 class UserResponse(UserBase):
     id: int = Field(gt=0)
     logs: List[DailyLogResponse] = []
-    is_active: bool = True  
+    is_active: bool = True 
+    role: str 
 
     model_config = ConfigDict(from_attributes=True)
 

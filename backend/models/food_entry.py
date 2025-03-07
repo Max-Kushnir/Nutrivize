@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.database.db import Base
+from backend.database.db import Base
 
 if TYPE_CHECKING:
     from .daily_log import DailyLog

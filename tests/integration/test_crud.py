@@ -1,15 +1,14 @@
-import pytest, os
-import datetime
+import pytest
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, Session
 
-from api.database.db import Base
-from api.crud import user_crud, food_crud, daily_log_crud, food_entry_crud
-from api.schema.user import UserCreate
-from api.schema.food import FoodCreate
-from api.schema.daily_log import DailyLogCreate
-from api.schema.food_entry import FoodEntryCreate
-from api.config import settings
+from backend.database.db import Base
+from backend.crud import user_crud, food_crud, daily_log_crud, food_entry_crud
+from backend.schema.user import UserCreate
+from backend.schema.food import FoodCreate
+from backend.schema.daily_log import DailyLogCreate
+from backend.schema.food_entry import FoodEntryCreate
+from backend.config import settings
 
 # Database configuration
 TEST_DB_URL = (
@@ -17,7 +16,7 @@ TEST_DB_URL = (
     f"{settings.POSTGRES_PASSWORD}@"
     f"{settings.POSTGRES_HOST}:"
     f"{settings.POSTGRES_PORT}/"
-    f"{settings.POSTGRES_DB}"
+    f"{settings.POSTGRES_TEST_DB}"
 )
 
 # Fixtures

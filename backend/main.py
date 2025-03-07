@@ -1,9 +1,9 @@
 import json, uvicorn
 from fastapi import FastAPI
 
-from api.database.db import get_db
-from api.models import User, DailyLog, Food, FoodEntry
-from api.schema import (
+from backend.database.db import get_db
+from backend.models import User, DailyLog, Food, FoodEntry
+from backend.schema import (
     UserBase, UserCreate, UserResponse,
     FoodBase, FoodCreate, FoodResponse, 
     DailyLogBase, DailyLogCreate, DailyLogResponse, 

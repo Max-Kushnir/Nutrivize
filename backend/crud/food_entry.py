@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 
 from .base import CRUD
 
-from api.models import DailyLog
-from api.models import User
-from api.models import FoodEntry
+from backend.models import DailyLog
+from backend.models import User
+from backend.models import FoodEntry
 
 class FoodEntryCRUD(CRUD):
     def get_many_from_user(self, db: Session, user: User, limit):

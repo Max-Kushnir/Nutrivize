@@ -2,9 +2,9 @@ import pytest, os, datetime
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, Session
 
-from api.models import User, Food, DailyLog, FoodEntry
-from api.database.db import Base
-from api.config import settings
+from backend.models import User, Food, DailyLog, FoodEntry
+from backend.database.db import Base
+from backend.config import settings
 
 # Database configuration
 TEST_DB_URL = (
@@ -12,7 +12,7 @@ TEST_DB_URL = (
     f"{settings.POSTGRES_PASSWORD}@"
     f"{settings.POSTGRES_HOST}:"
     f"{settings.POSTGRES_PORT}/"
-    f"{settings.POSTGRES_DB}"
+    f"{settings.POSTGRES_TEST_DB}"
 )
 
 

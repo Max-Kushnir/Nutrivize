@@ -2,7 +2,7 @@ from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import DeclarativeBase
-from api.config import settings
+from backend.config import settings
 
 class Base(DeclarativeBase):
     pass

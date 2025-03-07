@@ -2,13 +2,13 @@ import pytest, os, datetime, json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from api.models import User, Food, DailyLog, FoodEntry
-from api.database.db import Base
-from api.schema.daily_log import DailyLogCreate, DailyLogResponse
-from api.schema.user import UserCreate, UserResponse
-from api.schema.food import FoodCreate, FoodResponse
-from api.schema.food_entry import FoodEntryCreate, FoodEntryResponse
-from api.config import settings
+from backend.models import User, Food, DailyLog, FoodEntry
+from backend.database.db import Base
+from backend.schema.daily_log import DailyLogCreate, DailyLogResponse
+from backend.schema.user import UserCreate, UserResponse
+from backend.schema.food import FoodCreate, FoodResponse
+from backend.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from backend.config import settings
 
 UserResponse.model_rebuild()
 
@@ -18,7 +18,7 @@ TEST_DB_URL = (
     f"{settings.POSTGRES_PASSWORD}@"
     f"{settings.POSTGRES_HOST}:"
     f"{settings.POSTGRES_PORT}/"
-    f"{settings.POSTGRES_DB}"
+    f"{settings.POSTGRES_TEST_DB}"
 )
 
 # connect to database
