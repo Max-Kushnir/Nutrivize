@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     PGADMIN_EMAIL: EmailStr  # Added this
     PGADMIN_PASSWORD: str = Field(alias="PGADMIN_PW")  # Added this
 
+    # Server settings
+    SERVER_HOST: str = "0.0.0.0"
+    SERVER_PORT: int = 8000
+    ENV: str = "dev"  # Options: "prod", "dev", "test"
+
     # JWT settings
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
