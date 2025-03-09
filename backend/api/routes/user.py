@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from backend.database.db import get_db
 from backend.api.dependancies import get_current_active_user, get_db_user
 from backend.models.user import User
-from backend.schema.user import UserResponse, UserUpdate
+from backend.schemas.user import UserResponse, UserUpdate
 from backend.crud.user import user_crud
 
 router = APIRouter(

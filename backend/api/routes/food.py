@@ -5,7 +5,7 @@ from typing import List, Optional
 from backend.database.db import get_db
 from backend.api.dependancies import get_current_active_user, get_db_user
 from backend.models.user import User
-from backend.schema.food import FoodCreate, FoodResponse, FoodUpdate
+from backend.schemas.food import FoodCreate, FoodResponse, FoodUpdate
 from backend.crud.food import food_crud
 
 router = APIRouter(

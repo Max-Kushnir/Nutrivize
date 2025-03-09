@@ -4,10 +4,10 @@ from sqlalchemy.orm import sessionmaker, Session
 
 from backend.database.db import Base
 from backend.crud import user_crud, food_crud, daily_log_crud, food_entry_crud
-from backend.schema.user import UserCreate
-from backend.schema.food import FoodCreate
-from backend.schema.daily_log import DailyLogCreate
-from backend.schema.food_entry import FoodEntryCreate
+from backend.schemas.user import UserCreate
+from backend.schemas.food import FoodCreate
+from backend.schemas.daily_log import DailyLogCreate
+from backend.schemas.food_entry import FoodEntryCreate
 from backend.config import settings
 
 # Database configuration

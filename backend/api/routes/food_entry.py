@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from backend.database.db import get_db
 from backend.api.dependancies import get_current_active_user, get_db_user
 from backend.models.user import User
-from backend.schema.food_entry import FoodEntryCreate, FoodEntryResponse, FoodEntryUpdate
+from backend.schemas.food_entry import FoodEntryCreate, FoodEntryResponse, FoodEntryUpdate
 from backend.crud.food_entry import food_entry_crud
 from backend.crud.daily_log import daily_log_crud
 

@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 
 from backend.database.db import get_db
 from backend.auth import authenticate_user, create_access_token
-from backend.schema.token import Token
-from backend.schema.user import UserCreate, UserResponse
+from backend.schemas.token import Token
+from backend.schemas.user import UserCreate, UserResponse
 from backend.crud.user import user_crud
 
 router = APIRouter(

@@ -4,10 +4,10 @@ from sqlalchemy.orm import sessionmaker, Session
 
 from backend.models import User, Food, DailyLog, FoodEntry
 from backend.database.db import Base
-from backend.schema.daily_log import DailyLogCreate, DailyLogResponse
-from backend.schema.user import UserCreate, UserResponse
-from backend.schema.food import FoodCreate, FoodResponse
-from backend.schema.food_entry import FoodEntryCreate, FoodEntryResponse
+from backend.schemas.daily_log import DailyLogCreate, DailyLogResponse
+from backend.schemas.user import UserCreate, UserResponse
+from backend.schemas.food import FoodCreate, FoodResponse
+from backend.schemas.food_entry import FoodEntryCreate, FoodEntryResponse
 from backend.config import settings
 
 UserResponse.model_rebuild()
