@@ -14,12 +14,17 @@ class FoodEntryBase(BaseModel):
 class FoodEntryCreate(FoodEntryBase):
     pass
 
-class FoodEntryResponse(FoodEntryBase):
+class FoodEntryResponse(BaseModel):
     id: int = Field(gt=0)
-    daily_log: DailyLogResponse
+    log_id: int = Field(gt=0, alias="daily_log_id")  # Use alias
+    food_id: int = Field(gt=0)
+    quantity: float = Field(gt=0)
     food: FoodResponse
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True  # Allow both log_id and daily_log_id
+    )
 
 
 class FoodEntryUpdate(BaseModel):

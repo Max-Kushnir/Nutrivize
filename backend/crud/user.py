@@ -22,4 +22,4 @@ class UserCRUD(CRUD):
         db.commit()
         return user
     
-user_crud = UserCRUD(model=User)
+user_crud = UserCRUD()

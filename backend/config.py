@@ -12,13 +12,13 @@ class Settings(BaseSettings):
     POSTGRES_TEST_DB: str  # Added this
 
     # pgAdmin settings
-    PGADMIN_EMAIL: EmailStr  # Added this
-    PGADMIN_PASSWORD: str = Field(alias="PGADMIN_PW")  # Added this
+    PGADMIN_EMAIL: EmailStr
+    PGADMIN_PASSWORD: str = Field(alias="PGADMIN_PW")
 
     # Server settings
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 8000
-    ENV: str = "dev"  # Options: "prod", "dev", "test"
+    ENV: str = "dev"  # "prod", "dev", or "test"
 
     # JWT settings
     SECRET_KEY: str

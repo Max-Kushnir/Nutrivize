@@ -41,8 +41,8 @@ class CRUD:
     def get_one(self, db: Session, *args, **kwargs):
         return db.query(self._model).filter(*args).filter_by(**kwargs).first()
     
-    def get_many(self, db: Session, limit, *args, **kwargs):
-        return db.query(self._model).filter(*args).filter_by(**kwargs).limit(limit).all()
+    def get_many(self, db: Session, limit, skip=0, *args, **kwargs):
+        return db.query(self._model).filter(*args).filter_by(**kwargs).offset(skip).limit(limit).all()
 
-    def get_many_from_user(self, db: Session, limit, id, *args, **kwargs):
-        return self.get_many(db, limit=limit, *args, user_id=id, **kwargs)
+    def get_many_from_user(self, db: Session, limit, id, skip=0, *args, **kwargs):
+        return self.get_many(db, limit=limit, skip=skip, *args, user_id=id, **kwargs)
