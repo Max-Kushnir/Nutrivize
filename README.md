@@ -18,6 +18,7 @@ Nutrition_Logger/
 │   ├── config.py           # Pydantic config via .env
 │   ├── server.py           # Uvicorn app runner
 │   ├── api/                # FastAPI route modules
+│   │   ├── auth/           # Custom JWT authentication logic
 │   │   ├── dependancies.py
 │   │   ├── routes/
 │   │       ├── admin.py
