@@ -11,20 +11,20 @@ from backend.crud.daily_log import daily_log_crud
 from backend.crud.food import food_crud
 
 router = APIRouter(
-    prefix="/logs/{log_id}/entries",
+    prefix="/logs/{daily_log_id}/entries",
     tags=["food entries"]
 )
 
 
 @router.post("/", response_model=FoodEntryResponse, status_code=status.HTTP_201_CREATED)
 async def create_food_entry(
-    log_id: int,
+    daily_log_id: int,
     entry: FoodEntryCreate,
     db_user: tuple[Session, User] = Depends(get_db_user)
 ):
     db, current_user = db_user
 
-    log = daily_log_crud.get_one(db, daily_log_crud._model.id == log_id, user_id=current_user.id)
+    log = daily_log_crud.get_one(db, daily_log_crud._model.id == daily_log_id, user_id=current_user.id)
     if not log:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log not found")
 
@@ -33,30 +33,30 @@ async def create_food_entry(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Food not found")
 
     entry_data = entry.model_dump()
-    entry_data["log_id"] = log_id
+    entry_data["daily_log_id"] = daily_log_id
     return food_entry_crud.create(db, entry_data)
 
 
 @router.get("/", response_model=List[FoodEntryResponse])
-async def get_food_entries(log_id: int, db_user: tuple[Session, User] = Depends(get_db_user)):
+async def get_food_entries(daily_log_id: int, db_user: tuple[Session, User] = Depends(get_db_user)):
     db, current_user = db_user
 
-    log = daily_log_crud.get_one(db, daily_log_crud._model.id == log_id, user_id=current_user.id)
+    log = daily_log_crud.get_one(db, daily_log_crud._model.id == daily_log_id, user_id=current_user.id)
     if not log:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log not found")
 
-    entries = food_entry_crud.get_many(db, limit=1000, log_id=log_id)
+    entries = food_entry_crud.get_many(db, limit=1000, daily_log_id=daily_log_id)
     return entries
 
 
 @router.get("/{entry_id}", response_model=FoodEntryResponse)
-async def get_food_entry(log_id: int, entry_id: int, db_user: tuple[Session, User] = Depends(get_db_user)):
+async def get_food_entry(daily_log_id: int, entry_id: int, db_user: tuple[Session, User] = Depends(get_db_user)):
     db, current_user = db_user
-    log = daily_log_crud.get_one(db, daily_log_crud._model.id == log_id, user_id=current_user.id)
+    log = daily_log_crud.get_one(db, daily_log_crud._model.id == daily_log_id, user_id=current_user.id)
     if not log:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log not found")
 
-    entry = food_entry_crud.get_one(db, food_entry_crud._model.id == entry_id, log_id=log_id)
+    entry = food_entry_crud.get_one(db, food_entry_crud._model.id == entry_id, daily_log_id=daily_log_id)
     if not entry:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Food entry not found")
     return entry
@@ -64,18 +64,18 @@ async def get_food_entry(log_id: int, entry_id: int, db_user: tuple[Session, Use
 
 @router.put("/{entry_id}", response_model=FoodEntryResponse)
 async def update_food_entry(
-    log_id: int,
+    daily_log_id: int,
     entry_id: int,
     entry_update: FoodEntryUpdate,
     db_user: tuple[Session, User] = Depends(get_db_user)
 ):
     db, current_user = db_user
 
-    log = daily_log_crud.get_one(db, daily_log_crud._model.id == log_id, user_id=current_user.id)
+    log = daily_log_crud.get_one(db, daily_log_crud._model.id == daily_log_id, user_id=current_user.id)
     if not log:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log not found")
 
-    existing_entry = food_entry_crud.get_one(db, food_entry_crud._model.id == entry_id, log_id=log_id)
+    existing_entry = food_entry_crud.get_one(db, food_entry_crud._model.id == entry_id, daily_log_id=daily_log_id)
     if not existing_entry:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Food entry not found")
 
@@ -89,17 +89,17 @@ async def update_food_entry(
 
 @router.delete("/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_food_entry(
-    log_id: int,
+    daily_log_id: int,
     entry_id: int,
     db_user: tuple[Session, User] = Depends(get_db_user)
 ):
     db, current_user = db_user
 
-    log = daily_log_crud.get_one(db, daily_log_crud._model.id == log_id, user_id=current_user.id)
+    log = daily_log_crud.get_one(db, daily_log_crud._model.id == daily_log_id, user_id=current_user.id)
     if not log:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log not found")
 
-    existing_entry = food_entry_crud.get_one(db, food_entry_crud._model.id == entry_id, log_id=log_id)
+    existing_entry = food_entry_crud.get_one(db, food_entry_crud._model.id == entry_id, daily_log_id=daily_log_id)
     if not existing_entry:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Food entry not found")
 

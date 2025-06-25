@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import date
 
 from backend.database.db import get_db
 from backend.api.dependancies import get_db_user
@@ -13,26 +14,28 @@ router = APIRouter(
     tags=["logs"]
 )
 
-
 @router.post("/", response_model=DailyLogResponse, status_code=status.HTTP_201_CREATED)
 async def create_daily_log(log: DailyLogCreate, db_user: tuple[Session, User] = Depends(get_db_user)):
     db, current_user = db_user
 
+    # Use the date from request or default to today
+    log_date = log.date if log.date else date.today()
+    
     existing_log = daily_log_crud.get_one(
         db,
         daily_log_crud._model.user_id == current_user.id,
-        daily_log_crud._model.date == log.date
+        daily_log_crud._model.date == log_date  # Use log_date instead of log.date
     )
     if existing_log:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Log already exists for date {log.date}"
+            detail=f"Log already exists for date {log_date}"
         )
 
-    log_data = log.model_dump()
-    log_data["user_id"] = current_user.id
+    log_data = log.model_dump(exclude={'user_id'})  # Exclude user_id from request
+    log_data["user_id"] = current_user.id  # Always use current user's ID
+    log_data["date"] = log_date  # Explicitly set the date
     return daily_log_crud.create(db, log_data)
-
 
 @router.get("/", response_model=List[DailyLogResponse])
 async def get_user_logs(skip: int = 0, limit: int = 100, db_user: tuple[Session, User] = Depends(get_db_user)):

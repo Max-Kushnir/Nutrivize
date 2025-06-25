@@ -9,7 +9,7 @@ from backend.models.user import User
 from backend.config import settings
 from .security import verify_password
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 def authenticate_user(db: Session, identifier: str, password: str):
     """

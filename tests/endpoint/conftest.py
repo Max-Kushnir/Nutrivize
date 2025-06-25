@@ -6,9 +6,9 @@ from datetime import date
 from backend.main import app
 from backend.models import User, DailyLog, Food, FoodEntry
 from backend.auth.security import get_password_hash, create_access_token
+from backend.database.db import get_db
 
-# These come from your integration tests setup (test_auth_integration).
-# Presumably it configures the DB to point at POSTGRES_TEST_DB from your config.
+# Import test database setup from integration tests
 from tests.integration.test_auth_integration import (
     engine, tables, db_session
 )
@@ -17,18 +17,19 @@ from tests.integration.test_auth_integration import (
 @pytest.fixture
 def client(db_session):
     """Return a FastAPI TestClient configured to use the test database"""
-
+    
     def override_get_db():
         try:
             yield db_session
         finally:
             pass
-
-    app.dependency_overrides["backend.database.db.get_db"] = override_get_db
-
+    
+    # Fix: Use the actual function, not a string
+    app.dependency_overrides[get_db] = override_get_db
+    
     with TestClient(app) as test_client:
         yield test_client
-
+    
     app.dependency_overrides = {}
 
 
@@ -129,15 +130,15 @@ def test_foods(db_session):
             manufacturer="Generic"
         )
     ]
-
+    
     for food in foods:
         db_session.add(food)
-
+    
     db_session.commit()
-
+    
     for food in foods:
         db_session.refresh(food)
-
+    
     return foods
 
 
@@ -159,23 +160,21 @@ def test_food_entries(db_session, test_daily_log, test_foods):
     """Create test food entries"""
     entries = [
         FoodEntry(
-            log_id=test_daily_log.id,
+            daily_log_id=test_daily_log.id,  # Fixed: was log_id
             food_id=test_foods[0].id,
-            serving_size=1.0,
-            meal_time="breakfast"
+            quantity=1.0  # Fixed: was serving_size, removed meal_time
         ),
         FoodEntry(
-            log_id=test_daily_log.id,
+            daily_log_id=test_daily_log.id,  # Fixed: was log_id
             food_id=test_foods[1].id,
-            serving_size=2.0,
-            meal_time="lunch"
+            quantity=2.0  # Fixed: was serving_size, removed meal_time
         )
     ]
     for entry in entries:
         db_session.add(entry)
     db_session.commit()
-
+    
     for entry in entries:
         db_session.refresh(entry)
-
+    
     return entries

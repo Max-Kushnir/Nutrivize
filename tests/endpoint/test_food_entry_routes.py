@@ -10,8 +10,7 @@ def test_create_food_entry(authorized_client: TestClient, test_daily_log, test_f
     """Test creating a new food entry"""
     entry_data = {
         "food_id": test_foods[0].id,
-        "serving_size": 1.5,
-        "meal_time": "breakfast"
+        "quantity": 1.5
     }
 
     response = authorized_client.post(f"/api/v1/logs/{test_daily_log.id}/entries/", json=entry_data)
@@ -19,9 +18,8 @@ def test_create_food_entry(authorized_client: TestClient, test_daily_log, test_f
 
     data = response.json()
     assert data["food_id"] == entry_data["food_id"]
-    assert data["serving_size"] == entry_data["serving_size"]
-    assert data["meal_time"] == entry_data["meal_time"]
-    assert data["log_id"] == test_daily_log.id
+    assert data["quantity"] == entry_data["quantity"]
+    assert data["daily_log_id"] == test_daily_log.id
     assert "id" in data
 
     created_entry = db_session.query(FoodEntry).filter(FoodEntry.id == data["id"]).first()
@@ -33,8 +31,7 @@ def test_create_food_entry_nonexistent_log(authorized_client: TestClient, test_f
     """Test creating a food entry for a non-existent log"""
     entry_data = {
         "food_id": test_foods[0].id,
-        "serving_size": 1.0,
-        "meal_time": "breakfast"
+        "quantity": 1.0
     }
 
     response = authorized_client.post("/api/v1/logs/9999/entries/", json=entry_data)
@@ -46,8 +43,7 @@ def test_create_food_entry_nonexistent_food(authorized_client: TestClient, test_
     """Test creating a food entry with a non-existent food"""
     entry_data = {
         "food_id": 9999,
-        "serving_size": 1.0,
-        "meal_time": "breakfast"
+        "quantity": 1.0
     }
 
     response = authorized_client.post(f"/api/v1/logs/{test_daily_log.id}/entries/", json=entry_data)
@@ -64,8 +60,7 @@ def test_create_food_entry_other_users_log(authorized_client: TestClient, db_ses
 
     entry_data = {
         "food_id": test_foods[0].id,
-        "serving_size": 1.0,
-        "meal_time": "breakfast"
+        "quantity": 1.0
     }
 
     response = authorized_client.post(f"/api/v1/logs/{admin_log.id}/entries/", json=entry_data)
@@ -120,7 +115,7 @@ def test_get_food_entry_by_id(authorized_client: TestClient, test_daily_log, tes
 
     data = response.json()
     assert data["id"] == entry_id
-    assert data["log_id"] == test_daily_log.id
+    assert data["daily_log_id"] == test_daily_log.id
 
 
 def test_get_nonexistent_food_entry(authorized_client: TestClient, test_daily_log):
@@ -138,7 +133,7 @@ def test_get_food_entry_wrong_log(authorized_client: TestClient, test_daily_log,
     db_session.commit()
     db_session.refresh(second_log)
 
-    entry = FoodEntry(log_id=second_log.id, food_id=test_foods[0].id, serving_size=1.0)
+    entry = FoodEntry(daily_log_id=second_log.id, food_id=test_foods[0].id, quantity=1.0)
     db_session.add(entry)
     db_session.commit()
     db_session.refresh(entry)
@@ -153,8 +148,7 @@ def test_update_food_entry(authorized_client: TestClient, test_daily_log, test_f
     entry_id = test_food_entries[0].id
     update_data = {
         "food_id": test_foods[1].id,
-        "serving_size": 2.0,
-        "meal_time": "dinner"
+        "quantity": 2.0
     }
 
     response = authorized_client.put(f"/api/v1/logs/{test_daily_log.id}/entries/{entry_id}", json=update_data)
@@ -163,8 +157,7 @@ def test_update_food_entry(authorized_client: TestClient, test_daily_log, test_f
     data = response.json()
     assert data["id"] == entry_id
     assert data["food_id"] == update_data["food_id"]
-    assert data["serving_size"] == update_data["serving_size"]
-    assert data["meal_time"] == update_data["meal_time"]
+    assert data["quantity"] == update_data["quantity"]
 
     updated_entry = db_session.query(FoodEntry).filter(FoodEntry.id == entry_id).first()
     assert updated_entry.food_id == update_data["food_id"]
@@ -175,7 +168,7 @@ def test_update_food_entry_nonexistent_food(authorized_client: TestClient, test_
     entry_id = test_food_entries[0].id
     update_data = {
         "food_id": 9999,
-        "serving_size": 1.0
+        "quantity": 1.0
     }
 
     response = authorized_client.put(f"/api/v1/logs/{test_daily_log.id}/entries/{entry_id}", json=update_data)

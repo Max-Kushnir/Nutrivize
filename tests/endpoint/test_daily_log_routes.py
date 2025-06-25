@@ -9,21 +9,35 @@ from backend.models import DailyLog
 
 def test_create_daily_log(authorized_client: TestClient, test_user, db_session: Session):
     """Test creating a new daily log"""
-    log_data = {
-        "date": date.today().isoformat()
-    }
+    # Don't send user_id - it should come from auth
+    log_data = {}  # Empty body, will use today's date by default
 
     response = authorized_client.post("/api/v1/logs/", json=log_data)
     assert response.status_code == 201
 
     data = response.json()
-    assert data["date"] == log_data["date"]
+    assert data["date"] == date.today().isoformat()
     assert data["user_id"] == test_user.id
     assert "id" in data
 
     created_log = db_session.query(DailyLog).filter(DailyLog.id == data["id"]).first()
     assert created_log is not None
     assert created_log.user_id == test_user.id
+
+
+def test_create_daily_log_with_date(authorized_client: TestClient, test_user, db_session: Session):
+    """Test creating a log for a specific date"""
+    yesterday = date.today() - timedelta(days=1)
+    log_data = {
+        "date": yesterday.isoformat()
+    }
+
+    response = authorized_client.post("/api/v1/logs/", json=log_data)
+    assert response.status_code == 201
+
+    data = response.json()
+    assert data["date"] == yesterday.isoformat()
+    assert data["user_id"] == test_user.id
 
 
 def test_create_duplicate_daily_log(authorized_client: TestClient, test_daily_log):
@@ -34,7 +48,7 @@ def test_create_duplicate_daily_log(authorized_client: TestClient, test_daily_lo
 
     response = authorized_client.post("/api/v1/logs/", json=log_data)
     assert response.status_code == 400
-    assert f"Log already exists for date {log_data['date']}" in response.json()["detail"]
+    assert f"Log already exists for date {test_daily_log.date}" in response.json()["detail"]
 
 
 def test_create_daily_log_unauthorized(client: TestClient):
@@ -67,9 +81,10 @@ def test_get_user_logs(authorized_client: TestClient, test_user, test_daily_log,
     assert tomorrow.isoformat() in dates
 
 
-def test_get_user_logs_empty(authorized_client: TestClient, db_session: Session):
+def test_get_user_logs_empty(authorized_client: TestClient, test_user, db_session: Session):
     """Test getting logs when user has no logs"""
-    db_session.query(DailyLog).delete()
+    # Delete logs for this user only
+    db_session.query(DailyLog).filter(DailyLog.user_id == test_user.id).delete()
     db_session.commit()
 
     response = authorized_client.get("/api/v1/logs/")
@@ -98,7 +113,7 @@ def test_get_nonexistent_log(authorized_client: TestClient):
 
 def test_get_other_users_log(authorized_client: TestClient, db_session: Session, test_admin):
     """Test getting a log that belongs to another user"""
-    admin_log = DailyLog(user_id=test_admin.id, date=date.today())
+    admin_log = DailyLog(user_id=test_admin.id, date=date.today() - timedelta(days=1))
     db_session.add(admin_log)
     db_session.commit()
 
@@ -109,23 +124,23 @@ def test_get_other_users_log(authorized_client: TestClient, db_session: Session,
 
 def test_update_log(authorized_client: TestClient, test_daily_log, db_session: Session):
     """Test updating a log's date"""
-    from datetime import timedelta
-    new_date = (test_daily_log.date + timedelta(days=7)).isoformat()
-    update_data = {"date": new_date}
+    new_date = test_daily_log.date + timedelta(days=7)
+    update_data = {
+        "date": new_date.isoformat()
+    }
 
     response = authorized_client.put(f"/api/v1/logs/{test_daily_log.id}", json=update_data)
     assert response.status_code == 200
 
     data = response.json()
-    assert data["date"] == new_date
+    assert data["date"] == new_date.isoformat()
 
     updated_log = db_session.query(DailyLog).filter(DailyLog.id == test_daily_log.id).first()
-    assert updated_log.date.isoformat() == new_date
+    assert updated_log.date == new_date
 
 
 def test_update_nonexistent_log(authorized_client: TestClient):
     """Test updating a non-existent log"""
-    from datetime import date
     update_data = {"date": date.today().isoformat()}
 
     response = authorized_client.put("/api/v1/logs/9999", json=update_data)
@@ -153,7 +168,7 @@ def test_delete_nonexistent_log(authorized_client: TestClient):
 
 def test_delete_other_users_log(authorized_client: TestClient, db_session: Session, test_admin):
     """Test deleting a log that belongs to another user"""
-    admin_log = DailyLog(user_id=test_admin.id, date=date.today())
+    admin_log = DailyLog(user_id=test_admin.id, date=date.today() - timedelta(days=2))
     db_session.add(admin_log)
     db_session.commit()
 

@@ -27,7 +27,7 @@ async def register_user(user_create: UserCreate, db: Session = Depends(get_db)):
     if user_crud.get_by_email(db, user_create.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    hashed_password = get_password_hash(user_create.password)
+    hashed_password = get_password_hash(user_create.hashed_password)
     user_data = user_create.model_dump(exclude={"password"})
     user_data["hashed_password"] = hashed_password
     user_data["is_active"] = True

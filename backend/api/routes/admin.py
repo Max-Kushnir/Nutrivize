@@ -72,9 +72,7 @@ async def get_users_activity(
                 "username": user.username,
                 "email": user.email,
                 "logs_count": log_count,
-                "entries_count": entry_count,
-                "last_login": user.last_login.isoformat() if user.last_login else None,
-                "created_at": user.created_at.isoformat() if user.created_at else None
+                "entries_count": entry_count
             })
 
     return {
