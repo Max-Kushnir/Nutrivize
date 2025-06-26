@@ -161,6 +161,7 @@ Tests are grouped into:
 
 * `endpoint/` → Individual route tests
 * `integration/` → End-to-end and serialization tests
+* `unit/` → Authentication system and schema tests
 * Uses fixtures and separate test DB
 
 ---
