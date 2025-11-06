@@ -1,4 +1,4 @@
-# Nutrition Logger - Full Documentation
+# Nutrivize - Full Documentation
 
 ## 1. Overview
 
