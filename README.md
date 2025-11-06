@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Nutrition Logger is a FastAPI-based backend application for tracking users' daily food consumption, logging nutritional intake, and providing admin-level analytics. It supports user authentication and role-based access control with a clean, modular architecture.
+Nutrivize is a FastAPI-based backend application for tracking users' daily food consumption, logging nutritional intake, and providing admin-level analytics. It supports user authentication and role-based access control with a clean, modular architecture.
 
 ---
 
